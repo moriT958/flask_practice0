@@ -36,5 +36,9 @@ def create_app(test_config=None):
     # appに、db操作を登録
     from . import db
     db.init_app(app)
+
+    # Blueprintをアプリに登録
+    from . import auth
+    app.register_blueprint(auth.bp)
     
     return app
