@@ -30,7 +30,7 @@ def register():
         if error is None:
             try:
                 db.execute(
-                    "INSER INTO user (username, password) VALUES (?, ?)",
+                    "INSERT INTO user (username, password) VALUES (?, ?)",
                     (username, generate_password_hash(password))
                 )
                 db.commit()
@@ -59,7 +59,7 @@ def login():
         # データベースからユーザを取得
         user = db.execute(
             "SELECT * FROM user WHERE username = ?",
-            username
+            (username, )
         ).fetchone()  # fetchoneは一行返す、fetchallは全て返す
         if user is None:
             error = 'このユーザは登録されていません。'
@@ -70,7 +70,7 @@ def login():
             # session(cookie)にデータを格納
             session.clear()
             session['user_id'] = user['id']
-            redirect(url_for('index'))
+            return redirect(url_for('index'))
         
         flash(error)
 
@@ -78,14 +78,14 @@ def login():
 
 
 # ユーザのログアウトView
-@bp.route('/logout', methods=('GET', 'POST'))
+@bp.route('/logout')
 def logout():
     session.clear()
-    redirect(url_for('index'))
+    return redirect(url_for('index'))
 
 
 @bp.before_app_request  # View関数の前に実行されるように登録
-def load_logedd_in_user():
+def load_logged_in_user():
     # sessionにユーザが格納されている場合、そのデータをgに保存
     user_id = session.get('user_id')
 
@@ -94,7 +94,7 @@ def load_logedd_in_user():
     else:
         g.user = get_db().execute(
             "SELECT * FROM user WHERE id = ?",
-            user_id
+            (user_id, )
         ).fetchone()
 
 

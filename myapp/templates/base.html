@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - MoriApp</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1>掲示板</h1>
+        <ul>
+            {% if g.user %}  <!-- gは自動的にテンプレート中で利用可能 -->
+                <li>{{ g.user['username'] }}(ログイン中)</li>
+                <li><a href="{{ url_for('auth.logout') }}">ログアウト</a></li>
+            {% else %}
+                <li><a href="{{ url_for('auth.register') }}">新規登録</a></li>
+                <li><a href="{{ url_for('auth.login') }}">ログイン</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <section class="content">
+        <header>{% block header %}{% endblock %}</header>
+
+        {% for error in get_flashed_messages() %}
+            <div class="messages">{{ error }}</div>
+        {% endfor %}
+
+        {% block content %}{% endblock %}
+    </section>
+</body>
+</html>
